@@ -8,16 +8,15 @@ pipeline {
     
     stages {
         stage('Clone Repository') {
-    steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/23subbhashit/calc.git']]])
-    }
-}
-
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/23subbhashit/calc.git']]])
+            }
+        }
         
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_NAME}",'.')
+                    docker.build("${DOCKER_IMAGE_NAME}", '.')
                 }
             }
         }
@@ -26,8 +25,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('', "${DOCKER_REGISTRY_CREDENTIALS}") {
-                        sh 'docker tag calculator 23subbhashit/calc:latest'
-                        sh 'docker push 23subbhashit/calc'
+                        sh "docker tag ${DOCKER_IMAGE_NAME}:latest ${DOCKER_IMAGE_NAME}:latest"
+                        sh "docker push ${DOCKER_IMAGE_NAME}:latest"
                     }
                 }
             }
